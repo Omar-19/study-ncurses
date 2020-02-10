@@ -37,13 +37,15 @@ typedef struct		s_players_param
 	char	l_in_current_p[27];//Lives in current period : \0
 	int		il_in_current_p;
 	int		color;
+	int		fraction;
 }					t_players_param;
 
 typedef struct	s_map
 {
 	struct s_map	*next;
-	char			symbol;
+	unsigned char	symbol;
 	int				id;
+	int				is_caret;
 }				t_map;
 
 typedef struct	s_var_game
@@ -56,7 +58,7 @@ typedef struct	s_var_game
 	// int				last_cycles_to_die;
 	// int				live_player;
 	// int 				count_live;
-	// int				cycles_to_die;
+	int				cycles_to_die;
 	// int				count_check;
 }				t_var_game;
 
@@ -73,7 +75,21 @@ typedef struct	s_visual
 	WINDOW			*win_pl2;
 	WINDOW			*win_pl3;
 	WINDOW			*win_pl4;
+	WINDOW			*win_res_line;
 }				t_visual;
 
+void	visual(t_var_game *par);
+void	init_gp(t_game_param *game_param);
+void	init_pl(t_players_param *pl_param, int num);
+void	initialisation_gp_pl(t_visual *vis);
+void	initialisation_color_pair();
+void	initialisation_win(t_visual *vis);
+void	white_win_write(t_visual *vis);
+void	color_one_win_write(WINDOW *win, t_players_param *pl_par);
+void	color_win_write(t_visual *vis);
+void	func_box(t_visual *vis);
+void	func_wrefresh(t_visual *vis);
+void	del_all_wins(t_visual *vis);
+void	ft_error();
 
 #endif

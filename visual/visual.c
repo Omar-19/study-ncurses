@@ -1,177 +1,123 @@
 #include "ncurses.h"
 
-void	init_gp(t_game_param *game_param)
+char	hex_part(int num)
 {
-	memmove(game_param->lim, "Cycles/seconds limit : \0", 23);
-	memmove(game_param->cycle, "Cycle : \0", 9);
-	memmove(game_param->processes, "Processes : \0", 13);
-	memmove(game_param->c_t_d, "CYCLES_TO_DIE : \0", 17);
-	memmove(game_param->live, "Live : \0", 8);
-	memmove(game_param->c_delta, "CYCLE_DELTA : \0", 15);
-	memmove(game_param->nbr_l_max_checks, "NBR_LIVE MAX_CHECKS : \0", 23);
-	game_param->icycle = 0;
-	game_param->iprocesses = 0;
-	game_param->ilim = 0;
-	game_param->ic_delta = 0;
-	game_param->ic_t_d = 0;
-	game_param->ilive = 0;
-	game_param->inbr_l_max_checks = 0;
+	if (num == 10)
+		return ('a');
+	if (num == 11)
+		return ('b');
+	if (num == 12)
+		return ('c');
+	if (num == 13)
+		return ('d');
+	if (num == 14)
+		return ('e');
+	if (num == 15)
+		return ('f');
+	if (num >= 0 && num <= 9)
+		return ('0' + num);
+	return ('Z');
 }
 
-void	init_pl(t_players_param *pl_param, int num)
+char	*char_to_hex(unsigned char c)
 {
-	memmove(pl_param->player, "Player - \0", 10);
-	memmove(pl_param->last_live, "Last live : \0", 13);
-	memmove(pl_param->l_in_current_p, "Lives in current period : \0", 27);
-	pl_param->num_player = num;
-	pl_param->il_in_current_p = 0;
-	pl_param->ilast_live = 0;
-	(num == 1) ? (pl_param->color = 0) : 0;
-	(num == 2) ? (pl_param->color = 0) : 0;
-	(num == 3) ? (pl_param->color = 0) : 0;
-	(num == 4) ? (pl_param->color = 0) : 0;
+	int		symb;
+	char	*str;
+
+	str = (char *)malloc(4);
+	str[2] = ' ';
+	str[3] = '\0';
+	symb = c;
+	str[0] = hex_part(symb / 16);
+	str[1] = hex_part(symb % 16);
+	return (str);
 }
 
-void	initialisation_gp_pl(t_visual *vis)
+void	fraction_add(t_visual *vis, t_map *ptr)
 {
-	init_gp(&vis->game_param);
-	init_pl(&vis->pl1_param, 1);
-	init_pl(&vis->pl2_param, 2);
-	init_pl(&vis->pl3_param, 3);
-	init_pl(&vis->pl4_param, 4);
+	(ptr->id == 1) ? (++vis->pl1_param.fraction) : 0;
+	(ptr->id == 2) ? (++vis->pl2_param.fraction) : 0;
+	(ptr->id == 3) ? (++vis->pl3_param.fraction) : 0;
+	(ptr->id == 4) ? (++vis->pl4_param.fraction) : 0;
 }
 
-void	initialisation_color_pair()
+void	write_tab(t_visual *vis, t_var_game *par)
 {
-	init_pair(1, COLOR_RED, COLOR_BLACK);
-	init_pair(2, COLOR_GREEN, COLOR_BLACK);
-	init_pair(3, COLOR_MAGENTA, COLOR_BLACK);
-	init_pair(4, COLOR_CYAN, COLOR_BLACK);
-	init_pair(5, COLOR_RED, COLOR_YELLOW);
-	init_pair(6, COLOR_GREEN, COLOR_CYAN);
-	init_pair(7, COLOR_MAGENTA, COLOR_YELLOW);
-	init_pair(8, COLOR_CYAN, COLOR_WHITE);
+	int		i;
+	int		j;
+	t_map	*ptr;
+
+	i = 0;
+	ptr = par->map;
+	while (++i <= 64)
+	{
+		j = -1;
+		while (++j < 64)
+		{
+			if (ptr->id)
+			{
+				fraction_add(vis, ptr);
+				(!ptr->is_caret) ? (color_set(ptr->id, NULL)) : (color_set(ptr->id + 4, NULL));
+				mvaddstr(i, 2 + j * 3, char_to_hex(ptr->symbol));
+			}
+			else
+				mvaddstr(i, 2 + j * 3, char_to_hex(0));
+			color_set(9, NULL);
+			ptr = ptr->next;
+		}
+	}
 }
 
-void	initialisation_win(t_visual *vis)
-{
-	vis->win = newwin(64 + 2, 191 + 4, 0, 0);
-	vis->win_res = newwin(22, 60, 0, 196);
-	vis->win_pl1 = newwin(11, 60, 22, 196);
-	vis->win_pl2 = newwin(11, 60, 33, 196);
-	vis->win_pl3 = newwin(11, 60, 44, 196);
-	vis->win_pl4 = newwin(11, 60, 55, 196);
-}
-
-int main()
+void	visual(t_var_game *par)
 {
 	t_visual	vis;
 
+	// init
 	initialisation_gp_pl(&vis);
 
-	if (!initscr())
-	{
-		fprintf(stderr, "Error initialising ncurses.\n");
-		exit(1);
-	}
+	(!initscr()) ? (ft_error()) : 0;
 
 	curs_set(0);
 	refresh();
 
-    char test_str[192];
+    // char test_str[192];
 
-    int i = -1;
-    while (i < 191)
-    {
-		(i % 3 == 0 || i % 3 == 1) ? (test_str[i] = '0') : (test_str[i] = ' ');
-		++i;
-    }
-    test_str[191] = '\0';
-
+    // int i = -1;
+    // while (i < 191)
+    // {
+	// 	(i % 3 == 0 || i % 3 == 1) ? (test_str[i] = '0') : (test_str[i] = ' ');
+	// 	++i;
+    // }
+    // test_str[191] = '\0';
+	
+	// init
 	initialisation_win(&vis);
-    // WINDOW *win = newwin(64 + 2, 191 + 4, 0, 0);
-	// WINDOW *win_res = newwin(22, 60, 0, 196);
-	// WINDOW *win_pl1 = newwin(11, 60, 22, 196);
-	// WINDOW *win_pl2 = newwin(11, 60, 33, 196);
-	// WINDOW *win_pl3 = newwin(11, 60, 44, 196);
-	// WINDOW *win_pl4 = newwin(11, 60, 55, 196);
 
 	start_color();
+	// init
 	initialisation_color_pair();
 
-	i = 1;
-	while (i <= 64)
-	{
-		(i % 2) ? (color_set(1, NULL)) : (color_set(2, NULL));
-		mvaddstr(i++, 2, test_str);
-	}
+	write_tab(&vis, par);
+	// i = 1;
+	// while (i <= 64)
+	// {
+	// 	(i % 2) ? (color_set(1, NULL)) : (color_set(2, NULL));
+	// 	mvaddstr(i++, 2, test_str);
+	// }
 
-	// usleep(300000);
+	// usleep(300000); ???
 
-	// mvaddstr(LINES/2, (COLS - strlen(hello))/2, hello);
-
-	// color_set(n, NULL);
-	// mvaddstr(5 + n, (COLS-strlen(hello))/2, hello);
-
-	// Вывод для блока основной информации:
-	mvwprintw(vis.win_res, 4, 8, vis.game_param.lim);
-	mvwprintw(vis.win_res, 7, 8, vis.game_param.processes);
-	mvwprintw(vis.win_res, 10, 8, vis.game_param.c_t_d);
-	mvwprintw(vis.win_res, 13, 8, vis.game_param.c_delta);
-	mvwprintw(vis.win_res, 16, 8, vis.game_param.nbr_l_max_checks);
 	
-	//Вывод для блока player 1
-	wbkgd(vis.win_pl1, COLOR_PAIR(vis.pl1_param.num_player));
-	mvwprintw(vis.win_pl1, 2, 8, vis.pl1_param.player);
-	mvwprintw(vis.win_pl1, 5, 8, vis.pl1_param.last_live);
-	mvwprintw(vis.win_pl1, 8, 8, vis.pl1_param.l_in_current_p);
+	// Вывод для блока основной информации:
+	white_win_write(&vis);
+	
+	// Вывод цветных блоков
+	color_win_write(&vis);
 
-	//Вывод для блока player 2
-	wbkgd(vis.win_pl2, COLOR_PAIR(vis.pl2_param.num_player));
-	mvwprintw(vis.win_pl2, 2, 8, vis.pl1_param.player);
-	mvwprintw(vis.win_pl2, 5, 8, vis.pl1_param.last_live);
-	mvwprintw(vis.win_pl2, 8, 8, vis.pl1_param.l_in_current_p);
+	func_box(&vis);
 
-	//Вывод для блока player 3
-	wbkgd(vis.win_pl3, COLOR_PAIR(vis.pl3_param.num_player));
-	mvwprintw(vis.win_pl3, 2, 8, vis.pl1_param.player);
-	mvwprintw(vis.win_pl3, 5, 8, vis.pl1_param.last_live);
-	mvwprintw(vis.win_pl3, 8, 8, vis.pl1_param.l_in_current_p);
+	func_wrefresh(&vis);
 
-	//Вывод для блока player 4
-	wbkgd(vis.win_pl4, COLOR_PAIR(vis.pl4_param.num_player));
-	mvwprintw(vis.win_pl4, 2, 8, vis.pl1_param.player);
-	mvwprintw(vis.win_pl4, 5, 8, vis.pl1_param.last_live);
-	mvwprintw(vis.win_pl4, 8, 8, vis.pl1_param.l_in_current_p);
-
-	box(vis.win, 0, 0);
-	box(vis.win_res, 0, 0);
-	box(vis.win_pl1, 0, 0);
-	box(vis.win_pl2, 0, 0);
-	box(vis.win_pl3, 0, 0);
-	box(vis.win_pl4, 0, 0);
-
-	wrefresh(vis.win);
-	wrefresh(vis.win_res);
-	wrefresh(vis.win_pl1);
-	wrefresh(vis.win_pl2);
-	wrefresh(vis.win_pl3);
-	wrefresh(vis.win_pl4);
-	getch();
-
-	delwin(vis.win);
-	endwin();
-	delwin(vis.win_res);
-	endwin();
-	delwin(vis.win_pl1);
-	endwin();
-	delwin(vis.win_pl2);
-	endwin();
-	delwin(vis.win_pl3);
-	endwin();
-	delwin(vis.win_pl4);
-	endwin();
-
-	return (0);
+	del_all_wins(&vis);
 }
 // gcc -lncurses main.c
