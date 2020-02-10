@@ -76,6 +76,12 @@ int		main()
 	initialisation_gp_pl(&vis);
 	(!initscr()) ? (ft_error()) : 0;
 
+	initialisation_win(&vis);
+
+	start_color();
+
+	initialisation_color_pair();
+
 	// func_wrefresh(&vis);
 	par.map = test_init();
 	visual(&vis, &par);
@@ -115,8 +121,8 @@ int		main()
 	// par.map = test_init();
 	// visual(&vis, &par);
 	
-	while (1)
-		getch();
+	// while (1)
+	getch();
 	del_all_wins(&vis);
 	return (0);
 }

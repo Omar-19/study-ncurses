@@ -61,7 +61,7 @@ void	func_box(t_visual *vis)
 
 void	func_wrefresh(t_visual *vis)
 {
-	halfdelay(1);
+	// halfdelay(1);
 	wrefresh(vis->win);
 	wrefresh(vis->win_res);
 	wrefresh(vis->win_pl1);
@@ -69,5 +69,5 @@ void	func_wrefresh(t_visual *vis)
 	wrefresh(vis->win_pl3);
 	wrefresh(vis->win_pl4);
     wrefresh(vis->win_res_line);
-	getch();
+	// getch();
 }

@@ -92,11 +92,9 @@ void	visual(t_visual *vis, t_var_game *par)
     // test_str[191] = '\0';
 	
 	// init
-	initialisation_win(vis);
+	// initialisation_win(vis);
 
-	start_color();
 	// init
-	initialisation_color_pair();
 
 	write_tab(vis, par);
 	// i = 1;
