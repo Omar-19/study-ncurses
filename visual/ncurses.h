@@ -78,7 +78,7 @@ typedef struct	s_visual
 	WINDOW			*win_res_line;
 }				t_visual;
 
-void	visual(t_var_game *par);
+void	visual(t_visual *vis, t_var_game *par);
 void	init_gp(t_game_param *game_param);
 void	init_pl(t_players_param *pl_param, int num);
 void	initialisation_gp_pl(t_visual *vis);

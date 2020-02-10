@@ -65,17 +65,18 @@ void	write_tab(t_visual *vis, t_var_game *par)
 			color_set(9, NULL);
 			ptr = ptr->next;
 		}
+		// usleep(300000);
 	}
 }
 
-void	visual(t_var_game *par)
+void	visual(t_visual *vis, t_var_game *par)
 {
-	t_visual	vis;
+	// t_visual	vis;
 
-	// init
-	initialisation_gp_pl(&vis);
+	// // init
+	// initialisation_gp_pl(&vis);
 
-	(!initscr()) ? (ft_error()) : 0;
+	// (!initscr()) ? (ft_error()) : 0;
 
 	curs_set(0);
 	refresh();
@@ -91,13 +92,13 @@ void	visual(t_var_game *par)
     // test_str[191] = '\0';
 	
 	// init
-	initialisation_win(&vis);
+	initialisation_win(vis);
 
 	start_color();
 	// init
 	initialisation_color_pair();
 
-	write_tab(&vis, par);
+	write_tab(vis, par);
 	// i = 1;
 	// while (i <= 64)
 	// {
@@ -109,15 +110,15 @@ void	visual(t_var_game *par)
 
 	
 	// Вывод для блока основной информации:
-	white_win_write(&vis);
+	white_win_write(vis);
 	
 	// Вывод цветных блоков
-	color_win_write(&vis);
+	color_win_write(vis);
 
-	func_box(&vis);
+	func_box(vis);
 
-	func_wrefresh(&vis);
+	// func_wrefresh(vis);
 
-	del_all_wins(&vis);
+	// del_all_wins(&vis);
 }
 // gcc -lncurses main.c
